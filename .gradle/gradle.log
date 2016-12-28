@@ -12,16 +12,16 @@ This mapping 'snapshot_20160518' was designed for MC 1.9.4! Use at your own peri
 :deobfCompileDummyTask
 :getVersionJson
 :extractUserdev
-:downloadClient
-:downloadServer
-:splitServerJar
-:mergeJars
+:downloadClient SKIPPED
+:downloadServer SKIPPED
+:splitServerJar SKIPPED
+:mergeJars SKIPPED
 :applyBinaryPatches
 :deobfProvidedDummyTask
 :extractDependencyATs SKIPPED
-:extractMcpData
-:extractMcpMappings
-:genSrgs
+:extractMcpData SKIPPED
+:extractMcpMappings SKIPPED
+:genSrgs SKIPPED
 :deobfMcMCP
 Applying SpecialSource...
 Applying Exceptor...
@@ -29,11 +29,11 @@ Applying Exceptor...
 :compileApiJava UP-TO-DATE
 :processApiResources UP-TO-DATE
 :apiClasses UP-TO-DATE
-:sourceMainJava UP-TO-DATE
+:sourceMainJava
 :compileJavawarning: [options] bootstrap class path not set in conjunction with -source 1.6
 1 warning
 
-:processResources
+:processResources UP-TO-DATE
 :classes
 :jar
 :sourceTestJava UP-TO-DATE
@@ -53,4 +53,4 @@ remapping source...
 
 BUILD SUCCESSFUL
 
-Total time: 31.13 secs
+Total time: 23.765 secs
