@@ -90,6 +90,7 @@ public class EntityList
     private static final Map < Class <? extends Entity > , Integer > CLASS_TO_ID = Maps. < Class <? extends Entity > , Integer > newHashMap();
     private static final Map<String, Integer> NAME_TO_ID = Maps.<String, Integer>newHashMap();
     public static final Map<String, EntityList.EntityEggInfo> ENTITY_EGGS = Maps.<String, EntityList.EntityEggInfo>newLinkedHashMap();
+    private static final Map<String, java.lang.reflect.Constructor<? extends Entity>> CACHED_CONSTRUCTORS = Maps.newHashMap();
 
     /**
      * adds a mapping between Entity classes and both a string representation and an ID
@@ -142,12 +143,20 @@ public class EntityList
 
         try
         {
+            java.lang.reflect.Constructor<? extends Entity> ctr = CACHED_CONSTRUCTORS.get(entityName);
+            if (ctr == null)
+            {
             Class <? extends Entity > oclass = (Class)NAME_TO_CLASS.get(entityName);
 
             if (oclass != null)
             {
-                entity = (Entity)oclass.getConstructor(new Class[] {World.class}).newInstance(new Object[] {worldIn});
+                ctr = oclass.getConstructor(World.class);
+                CACHED_CONSTRUCTORS.put(entityName, ctr);
             }
+            }
+
+            if (ctr != null)
+                entity = ctr.newInstance(worldIn);
         }
         catch (Exception exception)
         {
@@ -165,15 +174,9 @@ public class EntityList
     {
         Entity entity = null;
 
-        Class <? extends Entity > oclass = null;
         try
         {
-            oclass = NAME_TO_CLASS.get(nbt.getString("id"));
-
-            if (oclass != null)
-            {
-                entity = (Entity)oclass.getConstructor(new Class[] {World.class}).newInstance(new Object[] {worldIn});
-            }
+            entity = createEntityByName(nbt.getString("id"), worldIn);
         }
         catch (Exception exception)
         {
@@ -190,7 +193,7 @@ public class EntityList
             {
                 net.minecraftforge.fml.common.FMLLog.log(org.apache.logging.log4j.Level.ERROR, e,
                         "An Entity %s(%s) has thrown an exception during loading, its state cannot be restored. Report this to the mod author",
-                        nbt.getString("id"), oclass.getName());
+                        nbt.getString("id"), NAME_TO_CLASS.get(nbt.getString("id")).getName());
                 entity = null;
             }
         }

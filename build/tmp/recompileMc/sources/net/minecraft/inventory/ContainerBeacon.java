@@ -70,6 +70,9 @@ public class ContainerBeacon extends Container
         }
     }
 
+    /**
+     * Determines whether supplied player can use this container
+     */
     public boolean canInteractWith(EntityPlayer playerIn)
     {
         return this.tileBeacon.isUseableByPlayer(playerIn);
@@ -98,12 +101,9 @@ public class ContainerBeacon extends Container
 
                 slot.onSlotChange(itemstack1, itemstack);
             }
-            else if (!this.beaconSlot.getHasStack() && this.beaconSlot.isItemValid(itemstack1) && itemstack1.stackSize == 1)
+            else if (this.mergeItemStack(itemstack1, 0, 1, false)) //Forge Fix Shift Clicking in beacons with stacks larger then 1.
             {
-                if (!this.mergeItemStack(itemstack1, 0, 1, false))
-                {
-                    return null;
-                }
+                return null;
             }
             else if (index >= 1 && index < 28)
             {
@@ -152,7 +152,7 @@ public class ContainerBeacon extends Container
         }
 
         /**
-         * Check if the stack is a valid item for this slot. Always true beside for the armor slots.
+         * Check if the stack is allowed to be placed in this slot, used for armor slots as well as furnace fuel.
          */
         public boolean isItemValid(@Nullable ItemStack stack)
         {

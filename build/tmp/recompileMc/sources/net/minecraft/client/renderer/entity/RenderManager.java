@@ -328,22 +328,22 @@ public class RenderManager
         return render != null && render.shouldRender(entityIn, camera, camX, camY, camZ);
     }
 
-    public void renderEntityStatic(Entity p_188388_1_, float p_188388_2_, boolean p_188388_3_)
+    public void renderEntityStatic(Entity entityIn, float partialTicks, boolean p_188388_3_)
     {
-        if (p_188388_1_.ticksExisted == 0)
+        if (entityIn.ticksExisted == 0)
         {
-            p_188388_1_.lastTickPosX = p_188388_1_.posX;
-            p_188388_1_.lastTickPosY = p_188388_1_.posY;
-            p_188388_1_.lastTickPosZ = p_188388_1_.posZ;
+            entityIn.lastTickPosX = entityIn.posX;
+            entityIn.lastTickPosY = entityIn.posY;
+            entityIn.lastTickPosZ = entityIn.posZ;
         }
 
-        double d0 = p_188388_1_.lastTickPosX + (p_188388_1_.posX - p_188388_1_.lastTickPosX) * (double)p_188388_2_;
-        double d1 = p_188388_1_.lastTickPosY + (p_188388_1_.posY - p_188388_1_.lastTickPosY) * (double)p_188388_2_;
-        double d2 = p_188388_1_.lastTickPosZ + (p_188388_1_.posZ - p_188388_1_.lastTickPosZ) * (double)p_188388_2_;
-        float f = p_188388_1_.prevRotationYaw + (p_188388_1_.rotationYaw - p_188388_1_.prevRotationYaw) * p_188388_2_;
-        int i = p_188388_1_.getBrightnessForRender(p_188388_2_);
+        double d0 = entityIn.lastTickPosX + (entityIn.posX - entityIn.lastTickPosX) * (double)partialTicks;
+        double d1 = entityIn.lastTickPosY + (entityIn.posY - entityIn.lastTickPosY) * (double)partialTicks;
+        double d2 = entityIn.lastTickPosZ + (entityIn.posZ - entityIn.lastTickPosZ) * (double)partialTicks;
+        float f = entityIn.prevRotationYaw + (entityIn.rotationYaw - entityIn.prevRotationYaw) * partialTicks;
+        int i = entityIn.getBrightnessForRender(partialTicks);
 
-        if (p_188388_1_.isBurning())
+        if (entityIn.isBurning())
         {
             i = 15728880;
         }
@@ -352,7 +352,7 @@ public class RenderManager
         int k = i / 65536;
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)j, (float)k);
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        this.doRenderEntity(p_188388_1_, d0 - this.renderPosX, d1 - this.renderPosY, d2 - this.renderPosZ, f, p_188388_2_, p_188388_3_);
+        this.doRenderEntity(entityIn, d0 - this.renderPosX, d1 - this.renderPosY, d2 - this.renderPosZ, f, partialTicks, p_188388_3_);
     }
 
     public void doRenderEntity(Entity entityIn, double x, double y, double z, float yaw, float partialTicks, boolean p_188391_10_)
@@ -387,7 +387,7 @@ public class RenderManager
                     throw new ReportedException(CrashReport.makeCrashReport(throwable2, "Post-rendering entity in world"));
                 }
 
-                if (this.debugBoundingBox && !entityIn.isInvisible() && !p_188391_10_ && !Minecraft.getMinecraft().func_189648_am())
+                if (this.debugBoundingBox && !entityIn.isInvisible() && !p_188391_10_ && !Minecraft.getMinecraft().isReducedDebug())
                 {
                     try
                     {
@@ -458,12 +458,12 @@ public class RenderManager
         GlStateManager.disableBlend();
         float f = entityIn.width / 2.0F;
         AxisAlignedBB axisalignedbb = entityIn.getEntityBoundingBox();
-        RenderGlobal.func_189694_a(axisalignedbb.minX - entityIn.posX + x, axisalignedbb.minY - entityIn.posY + y, axisalignedbb.minZ - entityIn.posZ + z, axisalignedbb.maxX - entityIn.posX + x, axisalignedbb.maxY - entityIn.posY + y, axisalignedbb.maxZ - entityIn.posZ + z, 1.0F, 1.0F, 1.0F, 1.0F);
+        RenderGlobal.drawBoundingBox(axisalignedbb.minX - entityIn.posX + x, axisalignedbb.minY - entityIn.posY + y, axisalignedbb.minZ - entityIn.posZ + z, axisalignedbb.maxX - entityIn.posX + x, axisalignedbb.maxY - entityIn.posY + y, axisalignedbb.maxZ - entityIn.posZ + z, 1.0F, 1.0F, 1.0F, 1.0F);
 
         if (entityIn instanceof EntityLivingBase)
         {
             float f1 = 0.01F;
-            RenderGlobal.func_189694_a(x - (double)f, y + (double)entityIn.getEyeHeight() - 0.009999999776482582D, z - (double)f, x + (double)f, y + (double)entityIn.getEyeHeight() + 0.009999999776482582D, z + (double)f, 1.0F, 0.0F, 0.0F, 1.0F);
+            RenderGlobal.drawBoundingBox(x - (double)f, y + (double)entityIn.getEyeHeight() - 0.009999999776482582D, z - (double)f, x + (double)f, y + (double)entityIn.getEyeHeight() + 0.009999999776482582D, z + (double)f, 1.0F, 0.0F, 0.0F, 1.0F);
         }
 
         Tessellator tessellator = Tessellator.getInstance();

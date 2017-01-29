@@ -251,6 +251,7 @@ public class Item extends net.minecraftforge.fml.common.registry.IForgeRegistryE
     /**
      * Returns the maximum damage an item can take.
      */
+    @Deprecated
     public int getMaxDamage()
     {
         return this.maxDamage;
@@ -633,6 +634,18 @@ public class Item extends net.minecraftforge.fml.common.registry.IForgeRegistryE
     {
         canRepair = false;
         return this;
+    }
+
+    /**
+     * Override this method to change the NBT data being sent to the client.
+     * You should ONLY override this when you have no other choice, as this might change behavior client side!
+     *
+     * @param stack The stack to send the NBT tag for
+     * @return The NBT tag
+     */
+    public NBTTagCompound getNBTShareTag(ItemStack stack)
+    {
+        return stack.getTagCompound();
     }
 
     /**
@@ -1425,11 +1438,11 @@ public class Item extends net.minecraftforge.fml.common.registry.IForgeRegistryE
         registerItemBlock(Blocks.STONE_SLAB2, (new ItemSlab(Blocks.STONE_SLAB2, Blocks.STONE_SLAB2, Blocks.DOUBLE_STONE_SLAB2)).setUnlocalizedName("stoneSlab2"));
         registerItemBlock(Blocks.REPEATING_COMMAND_BLOCK);
         registerItemBlock(Blocks.CHAIN_COMMAND_BLOCK);
-        registerItemBlock(Blocks.field_189877_df);
-        registerItemBlock(Blocks.field_189878_dg);
-        registerItemBlock(Blocks.field_189879_dh);
-        registerItemBlock(Blocks.field_189880_di);
-        registerItemBlock(Blocks.field_189881_dj);
+        registerItemBlock(Blocks.MAGMA);
+        registerItemBlock(Blocks.NETHER_WART_BLOCK);
+        registerItemBlock(Blocks.RED_NETHER_BRICK);
+        registerItemBlock(Blocks.BONE_BLOCK);
+        registerItemBlock(Blocks.STRUCTURE_VOID);
         registerItemBlock(Blocks.STRUCTURE_BLOCK);
         registerItem(256, "iron_shovel", (new ItemSpade(Item.ToolMaterial.IRON)).setUnlocalizedName("shovelIron"));
         registerItem(257, "iron_pickaxe", (new ItemPickaxe(Item.ToolMaterial.IRON)).setUnlocalizedName("pickaxeIron"));

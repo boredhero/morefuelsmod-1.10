@@ -43,13 +43,14 @@ public class BlockCocoa extends BlockHorizontal implements IGrowable
         {
             this.dropBlock(worldIn, pos, state);
         }
-        else if (worldIn.rand.nextInt(5) == 0)
+        else
         {
             int i = ((Integer)state.getValue(AGE)).intValue();
 
-            if (i < 2)
+            if (i < 2 && net.minecraftforge.common.ForgeHooks.onCropsGrowPre(worldIn, pos, state, rand.nextInt(5) == 0))
             {
                 worldIn.setBlockState(pos, state.withProperty(AGE, Integer.valueOf(i + 1)), 2);
+                net.minecraftforge.common.ForgeHooks.onCropsGrowPost(worldIn, pos, state, worldIn.getBlockState(pos));
             }
         }
     }

@@ -154,10 +154,10 @@ public class SPacketChunkData implements Packet<INetHandlerPlayClient>
         return i;
     }
 
-    protected int calculateChunkSize(Chunk p_189556_1_, boolean p_189556_2_, int p_189556_3_)
+    protected int calculateChunkSize(Chunk chunkIn, boolean p_189556_2_, int p_189556_3_)
     {
         int i = 0;
-        ExtendedBlockStorage[] aextendedblockstorage = p_189556_1_.getBlockStorageArray();
+        ExtendedBlockStorage[] aextendedblockstorage = chunkIn.getBlockStorageArray();
         int j = 0;
 
         for (int k = aextendedblockstorage.length; j < k; ++j)
@@ -178,7 +178,7 @@ public class SPacketChunkData implements Packet<INetHandlerPlayClient>
 
         if (this.doChunkLoad())
         {
-            i += p_189556_1_.getBiomeArray().length;
+            i += chunkIn.getBiomeArray().length;
         }
 
         return i;

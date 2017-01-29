@@ -112,7 +112,7 @@ public class BlockGrass extends Block implements IGrowable
                     {
                         if (rand.nextInt(8) == 0)
                         {
-                            worldIn.getBiomeGenForCoords(blockpos1).plantFlower(worldIn, rand, blockpos1);
+                            worldIn.getBiome(blockpos1).plantFlower(worldIn, rand, blockpos1);
                         }
                         else
                         {

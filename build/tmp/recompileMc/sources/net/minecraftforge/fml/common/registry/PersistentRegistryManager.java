@@ -69,10 +69,12 @@ import net.minecraftforge.fml.common.EnhancedRuntimeException.WrappedPrintStream
 @SuppressWarnings("WeakerAccess")
 public class PersistentRegistryManager
 {
+    public static void fireCreateRegistryEvents() {
+        MinecraftForge.EVENT_BUS.post(new RegistryEvent.NewRegistry());
+    }
+
     public static void fireRegistryEvents()
     {
-        MinecraftForge.EVENT_BUS.post(new RegistryEvent.NewRegistry());
-
         List<ResourceLocation> registryKeys = Lists.newArrayList(PersistentRegistry.ACTIVE.registries.keySet());
         Collections.sort(registryKeys, new Comparator<ResourceLocation>()
         {

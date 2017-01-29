@@ -398,13 +398,13 @@ public abstract class MinecraftServer implements Runnable, ICommandSender, IThre
     /**
      * par1 indicates if a log message should be output.
      */
-    public void saveAllWorlds(boolean dontLog)
+    public void saveAllWorlds(boolean isSilent)
     {
         for (WorldServer worldserver : this.worldServers)
         {
             if (worldserver != null)
             {
-                if (!dontLog)
+                if (!isSilent)
                 {
                     LOG.info("Saving chunks for level \'{}\'/{}", new Object[] {worldserver.getWorldInfo().getWorldName(), worldserver.provider.getDimensionType().getName()});
                 }
@@ -1384,6 +1384,9 @@ public abstract class MinecraftServer implements Runnable, ICommandSender, IThre
         return false;
     }
 
+    /**
+     * Get the forceGamemode field (whether joining players will be put in their old gamemode or the default one)
+     */
     public boolean getForceGamemode()
     {
         return this.isGamemodeForced;
@@ -1753,6 +1756,9 @@ public abstract class MinecraftServer implements Runnable, ICommandSender, IThre
         return 16;
     }
 
+    /**
+     * Set the forceGamemode field (whether joining players will be put in their old gamemode or the default one)
+     */
     @SideOnly(Side.SERVER)
     public void setForceGamemode(boolean force)
     {

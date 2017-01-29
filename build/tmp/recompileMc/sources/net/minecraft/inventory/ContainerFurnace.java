@@ -88,6 +88,9 @@ public class ContainerFurnace extends Container
         this.tileFurnace.setField(id, data);
     }
 
+    /**
+     * Determines whether supplied player can use this container
+     */
     public boolean canInteractWith(EntityPlayer playerIn)
     {
         return this.tileFurnace.isUseableByPlayer(playerIn);

@@ -74,11 +74,11 @@ public class ModelBakery
     private final Map<ResourceLocation, ModelBlockDefinition> blockDefinitions = Maps.<ResourceLocation, ModelBlockDefinition>newHashMap();
     private final Map<Item, List<String>> variantNames = Maps.<Item, List<String>>newIdentityHashMap();
 
-    public ModelBakery(IResourceManager p_i46085_1_, TextureMap p_i46085_2_, BlockModelShapes p_i46085_3_)
+    public ModelBakery(IResourceManager resourceManagerIn, TextureMap textureMapIn, BlockModelShapes blockModelShapesIn)
     {
-        this.resourceManager = p_i46085_1_;
-        this.textureMap = p_i46085_2_;
-        this.blockModelShapes = p_i46085_3_;
+        this.resourceManager = resourceManagerIn;
+        this.textureMap = textureMapIn;
+        this.blockModelShapes = blockModelShapesIn;
     }
 
     public IRegistry<ModelResourceLocation, IBakedModel> setupModelRegistry()
@@ -170,19 +170,19 @@ public class ModelBakery
         this.loadItemModels();
     }
 
-    protected void registerVariant(ModelBlockDefinition p_177569_1_, ModelResourceLocation p_177569_2_)
+    protected void registerVariant(ModelBlockDefinition blockstateDefinition, ModelResourceLocation location)
     {
-        this.variants.put(p_177569_2_, p_177569_1_.getVariant(p_177569_2_.getVariant()));
+        this.variants.put(location, blockstateDefinition.getVariant(location.getVariant()));
     }
 
-    protected ModelBlockDefinition getModelBlockDefinition(ResourceLocation p_177586_1_)
+    protected ModelBlockDefinition getModelBlockDefinition(ResourceLocation location)
     {
-        ResourceLocation resourcelocation = this.getBlockstateLocation(p_177586_1_);
+        ResourceLocation resourcelocation = this.getBlockstateLocation(location);
         ModelBlockDefinition modelblockdefinition = (ModelBlockDefinition)this.blockDefinitions.get(resourcelocation);
 
         if (modelblockdefinition == null)
         {
-            modelblockdefinition = this.loadMultipartMBD(p_177586_1_, resourcelocation);
+            modelblockdefinition = this.loadMultipartMBD(location, resourcelocation);
             this.blockDefinitions.put(resourcelocation, modelblockdefinition);
         }
 
@@ -208,19 +208,19 @@ public class ModelBakery
         return new ModelBlockDefinition(list);
     }
 
-    private ModelBlockDefinition loadModelBlockDefinition(ResourceLocation p_188636_1_, IResource p_188636_2_)
+    private ModelBlockDefinition loadModelBlockDefinition(ResourceLocation location, IResource resource)
     {
         InputStream inputstream = null;
         ModelBlockDefinition lvt_4_1_;
 
         try
         {
-            inputstream = p_188636_2_.getInputStream();
+            inputstream = resource.getInputStream();
             lvt_4_1_ = ModelBlockDefinition.parseFromReader(new InputStreamReader(inputstream, Charsets.UTF_8));
         }
         catch (Exception exception)
         {
-            throw new RuntimeException("Encountered an exception when loading model definition of \'" + p_188636_1_ + "\' from: \'" + p_188636_2_.getResourceLocation() + "\' in resourcepack: \'" + p_188636_2_.getResourcePackName() + "\'", exception);
+            throw new RuntimeException("Encountered an exception when loading model definition of \'" + location + "\' from: \'" + resource.getResourceLocation() + "\' in resourcepack: \'" + resource.getResourcePackName() + "\'", exception);
         }
         finally
         {
@@ -230,9 +230,9 @@ public class ModelBakery
         return lvt_4_1_;
     }
 
-    private ResourceLocation getBlockstateLocation(ResourceLocation p_188631_1_)
+    private ResourceLocation getBlockstateLocation(ResourceLocation location)
     {
-        return new ResourceLocation(p_188631_1_.getResourceDomain(), "blockstates/" + p_188631_1_.getResourcePath() + ".json");
+        return new ResourceLocation(location.getResourceDomain(), "blockstates/" + location.getResourcePath() + ".json");
     }
 
     protected void loadVariantModels()
@@ -276,7 +276,7 @@ public class ModelBakery
         }
     }
 
-    protected ModelBlock loadModel(ResourceLocation p_177594_1_) throws IOException
+    protected ModelBlock loadModel(ResourceLocation location) throws IOException
     {
         Reader reader = null;
         IResource iresource = null;
@@ -284,7 +284,7 @@ public class ModelBakery
 
         try
         {
-            String s = p_177594_1_.getResourcePath();
+            String s = location.getResourcePath();
 
             if (!"builtin/generated".equals(s))
             {
@@ -301,19 +301,19 @@ public class ModelBakery
 
                     if (s1 == null)
                     {
-                        throw new FileNotFoundException(p_177594_1_.toString());
+                        throw new FileNotFoundException(location.toString());
                     }
 
                     reader = new StringReader(s1);
                 }
                 else
                 {
-                    iresource = this.resourceManager.getResource(this.getModelLocation(p_177594_1_));
+                    iresource = this.resourceManager.getResource(this.getModelLocation(location));
                     reader = new InputStreamReader(iresource.getInputStream(), Charsets.UTF_8);
                 }
 
                 lvt_5_1_ = ModelBlock.deserialize(reader);
-                lvt_5_1_.name = p_177594_1_.toString();
+                lvt_5_1_.name = location.toString();
                 ModelBlock modelblock1 = lvt_5_1_;
                 return modelblock1;
             }
@@ -329,9 +329,9 @@ public class ModelBakery
         return lvt_5_1_;
     }
 
-    protected ResourceLocation getModelLocation(ResourceLocation p_177580_1_)
+    protected ResourceLocation getModelLocation(ResourceLocation location)
     {
-        return new ResourceLocation(p_177580_1_.getResourceDomain(), "models/" + p_177580_1_.getResourcePath() + ".json");
+        return new ResourceLocation(location.getResourceDomain(), "models/" + location.getResourcePath() + ".json");
     }
 
     protected void loadItemModels()
@@ -362,20 +362,20 @@ public class ModelBakery
         }
     }
 
-    private void loadItemModel(String p_188634_1_, ResourceLocation p_188634_2_, ResourceLocation p_188634_3_)
+    private void loadItemModel(String variantName, ResourceLocation location, ResourceLocation itemName)
     {
-        this.itemLocations.put(p_188634_1_, p_188634_2_);
+        this.itemLocations.put(variantName, location);
 
-        if (this.models.get(p_188634_2_) == null)
+        if (this.models.get(location) == null)
         {
             try
             {
-                ModelBlock modelblock = this.loadModel(p_188634_2_);
-                this.models.put(p_188634_2_, modelblock);
+                ModelBlock modelblock = this.loadModel(location);
+                this.models.put(location, modelblock);
             }
             catch (Exception exception)
             {
-                LOGGER.warn("Unable to load item model: \'{}\' for item: \'{}\'", new Object[] {p_188634_2_, p_188634_3_, exception});
+                LOGGER.warn("Unable to load item model: \'{}\' for item: \'{}\'", new Object[] {location, itemName, exception});
             }
         }
     }
@@ -444,9 +444,9 @@ public class ModelBakery
         return list;
     }
 
-    protected ResourceLocation getItemLocation(String p_177583_1_)
+    protected ResourceLocation getItemLocation(String location)
     {
-        ResourceLocation resourcelocation = new ResourceLocation(p_177583_1_.replaceAll("#.*", ""));
+        ResourceLocation resourcelocation = new ResourceLocation(location.replaceAll("#.*", ""));
         return new ResourceLocation(resourcelocation.getResourceDomain(), "item/" + resourcelocation.getResourcePath());
     }
 
@@ -492,9 +492,9 @@ public class ModelBakery
     }
 
     @Nullable
-    private IBakedModel createRandomModelForVariantList(VariantList p_188639_1_, String p_188639_2_)
+    private IBakedModel createRandomModelForVariantList(VariantList variantsIn, String modelLocation)
     {
-        if (p_188639_1_.getVariantList().isEmpty())
+        if (variantsIn.getVariantList().isEmpty())
         {
             return null;
         }
@@ -503,7 +503,7 @@ public class ModelBakery
             WeightedBakedModel.Builder weightedbakedmodel$builder = new WeightedBakedModel.Builder();
             int i = 0;
 
-            for (Variant variant : p_188639_1_.getVariantList())
+            for (Variant variant : variantsIn.getVariantList())
             {
                 ModelBlock modelblock = (ModelBlock)this.models.get(variant.getModelLocation());
 
@@ -511,7 +511,7 @@ public class ModelBakery
                 {
                     if (modelblock.getElements().isEmpty())
                     {
-                        LOGGER.warn("Missing elements for: {}", new Object[] {p_188639_2_});
+                        LOGGER.warn("Missing elements for: {}", new Object[] {modelLocation});
                     }
                     else
                     {
@@ -526,7 +526,7 @@ public class ModelBakery
                 }
                 else
                 {
-                    LOGGER.warn("Missing model for: {}", new Object[] {p_188639_2_});
+                    LOGGER.warn("Missing model for: {}", new Object[] {modelLocation});
                 }
             }
 
@@ -534,7 +534,7 @@ public class ModelBakery
 
             if (i == 0)
             {
-                LOGGER.warn("No weighted models for: {}", new Object[] {p_188639_2_});
+                LOGGER.warn("No weighted models for: {}", new Object[] {modelLocation});
             }
             else if (i == 1)
             {

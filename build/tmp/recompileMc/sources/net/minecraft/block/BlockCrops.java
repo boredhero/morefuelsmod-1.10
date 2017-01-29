@@ -82,9 +82,10 @@ public class BlockCrops extends BlockBush implements IGrowable
             {
                 float f = getGrowthChance(this, worldIn, pos);
 
-                if (rand.nextInt((int)(25.0F / f) + 1) == 0)
+                if(net.minecraftforge.common.ForgeHooks.onCropsGrowPre(worldIn, pos, state, rand.nextInt((int)(25.0F / f) + 1) == 0))
                 {
                     worldIn.setBlockState(pos, this.withAge(i + 1), 2);
+                    net.minecraftforge.common.ForgeHooks.onCropsGrowPost(worldIn, pos, state, worldIn.getBlockState(pos));
                 }
             }
         }

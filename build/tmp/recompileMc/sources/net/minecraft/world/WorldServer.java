@@ -461,7 +461,7 @@ public class WorldServer extends World implements IThreadListener
                         this.setBlockState(blockpos1, Blocks.SNOW_LAYER.getDefaultState());
                     }
 
-                    if (flag && this.getBiomeGenForCoords(blockpos2).canRain())
+                    if (flag && this.getBiome(blockpos2).canRain())
                     {
                         this.getBlockState(blockpos2).getBlock().fillWithRain(this, blockpos2);
                     }
@@ -602,6 +602,7 @@ public class WorldServer extends World implements IThreadListener
 
     public void scheduleBlockUpdate(BlockPos pos, Block blockIn, int delay, int priority)
     {
+        if (blockIn == null) return; //Forge: Prevent null blocks from ticking, can happen if blocks are removed in old worlds. TODO: Fix real issue causing block to be null.
         if (pos instanceof BlockPos.MutableBlockPos || pos instanceof BlockPos.PooledMutableBlockPos)
         {
             pos = new BlockPos(pos);

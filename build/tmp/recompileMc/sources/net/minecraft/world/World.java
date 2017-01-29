@@ -169,7 +169,7 @@ public abstract class World implements IBlockAccess, net.minecraftforge.common.c
         return this;
     }
 
-    public Biome getBiomeGenForCoords(final BlockPos pos)
+    public Biome getBiome(final BlockPos pos)
     {
         return this.provider.getBiomeForCoords(pos);
     }
@@ -200,7 +200,7 @@ public abstract class World implements IBlockAccess, net.minecraftforge.common.c
         }
         else
         {
-            return this.provider.getBiomeProvider().getBiomeGenerator(pos, Biomes.PLAINS);
+            return this.provider.getBiomeProvider().getBiome(pos, Biomes.PLAINS);
         }
     }
 
@@ -254,9 +254,9 @@ public abstract class World implements IBlockAccess, net.minecraftforge.common.c
         return !this.isOutsideBuildHeight(pos) && pos.getX() >= -30000000 && pos.getZ() >= -30000000 && pos.getX() < 30000000 && pos.getZ() < 30000000;
     }
 
-    private boolean isOutsideBuildHeight(BlockPos p_189509_1_)
+    private boolean isOutsideBuildHeight(BlockPos pos)
     {
-        return p_189509_1_.getY() < 0 || p_189509_1_.getY() >= 256;
+        return pos.getY() < 0 || pos.getY() >= 256;
     }
 
     /**
@@ -730,18 +730,21 @@ public abstract class World implements IBlockAccess, net.minecraftforge.common.c
      */
     public BlockPos getHeight(BlockPos pos)
     {
-        return new BlockPos(pos.getX(), this.func_189649_b(pos.getX(), pos.getZ()), pos.getZ());
+        return new BlockPos(pos.getX(), this.getHeightmapHeight(pos.getX(), pos.getZ()), pos.getZ());
     }
 
-    public int func_189649_b(int p_189649_1_, int p_189649_2_)
+    /**
+     * Returns, from the height map, the height of the highest block at this x and z coordinate.
+     */
+    public int getHeightmapHeight(int x, int z)
     {
         int i;
 
-        if (p_189649_1_ >= -30000000 && p_189649_2_ >= -30000000 && p_189649_1_ < 30000000 && p_189649_2_ < 30000000)
+        if (x >= -30000000 && z >= -30000000 && x < 30000000 && z < 30000000)
         {
-            if (this.isChunkLoaded(p_189649_1_ >> 4, p_189649_2_ >> 4, true))
+            if (this.isChunkLoaded(x >> 4, z >> 4, true))
             {
-                i = this.getChunkFromChunkCoords(p_189649_1_ >> 4, p_189649_2_ >> 4).getHeightValue(p_189649_1_ & 15, p_189649_2_ & 15);
+                i = this.getChunkFromChunkCoords(x >> 4, z >> 4).getHeightValue(x & 15, z & 15);
             }
             else
             {
@@ -1383,7 +1386,7 @@ public abstract class World implements IBlockAccess, net.minecraftforge.common.c
                 }
             }
         }
-
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.world.GetCollisionBoxesEvent(this, entityIn, aabb, list));
         return list;
     }
 
@@ -1527,9 +1530,9 @@ public abstract class World implements IBlockAccess, net.minecraftforge.common.c
     /**
      * Returns the amount of skylight subtracted for the current time
      */
-    public int calculateSkylightSubtracted(float p_72967_1_)
+    public int calculateSkylightSubtracted(float partialTicks)
     {
-        float f = provider.getSunBrightnessFactor(p_72967_1_);
+        float f = provider.getSunBrightnessFactor(partialTicks);
         f = 1 - f;
         return (int)(f * 11);
     }
@@ -1541,14 +1544,14 @@ public abstract class World implements IBlockAccess, net.minecraftforge.common.c
      *
      * @return The current brightness factor
      * */
-    public float getSunBrightnessFactor(float p_72967_1_)
+    public float getSunBrightnessFactor(float partialTicks)
     {
-        float f = this.getCelestialAngle(p_72967_1_);
+        float f = this.getCelestialAngle(partialTicks);
         float f1 = 1.0F - (MathHelper.cos(f * ((float)Math.PI * 2F)) * 2.0F + 0.5F);
         f1 = MathHelper.clamp_float(f1, 0.0F, 1.0F);
         f1 = 1.0F - f1;
-        f1 = (float)((double)f1 * (1.0D - (double)(this.getRainStrength(p_72967_1_) * 5.0F) / 16.0D));
-        f1 = (float)((double)f1 * (1.0D - (double)(this.getThunderStrength(p_72967_1_) * 5.0F) / 16.0D));
+        f1 = (float)((double)f1 * (1.0D - (double)(this.getRainStrength(partialTicks) * 5.0F) / 16.0D));
+        f1 = (float)((double)f1 * (1.0D - (double)(this.getThunderStrength(partialTicks) * 5.0F) / 16.0D));
         return f1;
     }
 
@@ -2901,7 +2904,7 @@ public abstract class World implements IBlockAccess, net.minecraftforge.common.c
 
     public boolean canBlockFreezeBody(BlockPos pos, boolean noWaterAdj)
     {
-        Biome biome = this.getBiomeGenForCoords(pos);
+        Biome biome = this.getBiome(pos);
         float f = biome.getFloatTemperature(pos);
 
         if (f > 0.15F)
@@ -2950,7 +2953,7 @@ public abstract class World implements IBlockAccess, net.minecraftforge.common.c
 
     public boolean canSnowAtBody(BlockPos pos, boolean checkLight)
     {
-        Biome biome = this.getBiomeGenForCoords(pos);
+        Biome biome = this.getBiome(pos);
         float f = biome.getFloatTemperature(pos);
 
         if (f > 0.15F)
@@ -3611,7 +3614,7 @@ public abstract class World implements IBlockAccess, net.minecraftforge.common.c
                 {
                     d2 *= ((Double)Objects.firstNonNull(playerToDouble.apply(entityplayer1), Double.valueOf(1.0D))).doubleValue();
                 }
-
+                d2 = net.minecraftforge.common.ForgeHooks.getPlayerVisibilityDistance(entityplayer1, d2, maxXZDistance);
                 if ((maxYDistance < 0.0D || Math.abs(entityplayer1.posY - posY) < maxYDistance * maxYDistance) && (maxXZDistance < 0.0D || d1 < d2 * d2) && (d0 == -1.0D || d1 < d0))
                 {
                     d0 = d1;
@@ -3880,7 +3883,7 @@ public abstract class World implements IBlockAccess, net.minecraftforge.common.c
         }
         else
         {
-            Biome biome = this.getBiomeGenForCoords(strikePosition);
+            Biome biome = this.getBiome(strikePosition);
             return biome.getEnableSnow() ? false : (this.canSnowAt(strikePosition, false) ? false : biome.canRain());
         }
     }

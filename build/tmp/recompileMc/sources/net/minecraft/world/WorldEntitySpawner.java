@@ -141,7 +141,7 @@ public final class WorldEntitySpawner
 
                                                 try
                                                 {
-                                                    entityliving = (EntityLiving)biome$spawnlistentry.entityClass.getConstructor(new Class[] {World.class}).newInstance(new Object[] {worldServerIn});
+                                                    entityliving = (EntityLiving)biome$spawnlistentry.newInstance(worldServerIn);
                                                 }
                                                 catch (Exception exception)
                                                 {
@@ -269,7 +269,7 @@ public final class WorldEntitySpawner
 
                             try
                             {
-                                entityliving = (EntityLiving)biome$spawnlistentry.entityClass.getConstructor(new Class[] {World.class}).newInstance(new Object[] {worldIn});
+                                entityliving = (EntityLiving)biome$spawnlistentry.newInstance(worldIn);
                             }
                             catch (Exception exception)
                             {

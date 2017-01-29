@@ -68,9 +68,9 @@ public class MapGenEndCity extends MapGenStructure
                 this.create(worldIn, chunkProvider, random, chunkX, chunkZ);
             }
 
-            private void create(World worldIn, ChunkProviderEnd chunkProvider, Random random, int chunkX, int chunkZ)
+            private void create(World worldIn, ChunkProviderEnd chunkProvider, Random rnd, int chunkX, int chunkZ)
             {
-                Rotation rotation = Rotation.values()[random.nextInt(Rotation.values().length)];
+                Rotation rotation = Rotation.values()[rnd.nextInt(Rotation.values().length)];
                 ChunkPrimer chunkprimer = new ChunkPrimer();
                 chunkProvider.setBlocksInChunk(chunkX, chunkZ, chunkprimer);
                 int i = 5;
@@ -103,7 +103,7 @@ public class MapGenEndCity extends MapGenStructure
                 else
                 {
                     BlockPos blockpos = new BlockPos(chunkX * 16 + 8, k1, chunkZ * 16 + 8);
-                    StructureEndCityPieces.beginHouseTower(blockpos, rotation, this.components, random);
+                    StructureEndCityPieces.beginHouseTower(blockpos, rotation, this.components, rnd);
                     this.updateBoundingBox();
                     this.isSizeable = true;
                 }

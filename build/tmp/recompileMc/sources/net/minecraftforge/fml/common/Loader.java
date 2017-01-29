@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,6 +36,7 @@ import java.util.Set;
 
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.fml.common.LoaderState.ModState;
 import net.minecraftforge.fml.common.ModContainer.Disableable;
 import net.minecraftforge.fml.common.ProgressManager.ProgressBar;
@@ -58,6 +60,7 @@ import net.minecraftforge.fml.common.versioning.VersionParser;
 import net.minecraftforge.fml.relauncher.ModListHelper;
 import net.minecraftforge.fml.relauncher.Side;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.Level;
 
 import com.google.common.base.CharMatcher;
@@ -212,7 +215,15 @@ public class Loader
         }
 
         minecraft = new MinecraftDummyContainer(MC_VERSION);
-        mcp = new MCPDummyContainer(MetadataCollection.from(getClass().getResourceAsStream("/mcpmod.info"), "MCP").getMetadataForId("mcp", null));
+        InputStream mcpModInputStream = getClass().getResourceAsStream("/mcpmod.info");
+        try
+        {
+            mcp = new MCPDummyContainer(MetadataCollection.from(mcpModInputStream, "MCP").getMetadataForId("mcp", null));
+        }
+        finally
+        {
+            IOUtils.closeQuietly(mcpModInputStream);
+        }
     }
 
     /**
@@ -541,6 +552,9 @@ public class Loader
                 }
             }
         }
+
+        ConfigManager.loadData(discoverer.getASMTable());
+
         modController.transition(LoaderState.CONSTRUCTING, false);
         modController.distributeStateMessage(LoaderState.CONSTRUCTING, modClassLoader, discoverer.getASMTable(), reverseDependencies);
 
@@ -601,6 +615,7 @@ public class Loader
             FMLLog.warning("There were errors previously. Not beginning mod initialization phase");
             return;
         }
+        PersistentRegistryManager.fireCreateRegistryEvents();
         ObjectHolderRegistry.INSTANCE.findObjectHolders(discoverer.getASMTable());
         ItemStackHolderInjector.INSTANCE.findHolders(discoverer.getASMTable());
         CapabilityManager.INSTANCE.injectCapabilities(discoverer.getASMTable());
@@ -1143,5 +1158,10 @@ public class Loader
     public final LoaderState getLoaderState()
     {
         return modController != null ? modController.getState() : LoaderState.NOINIT;
+    }
+
+    public void setActiveModContainer(ModContainer container)
+    {
+        this.modController.forceActiveContainer(container);
     }
 }

@@ -84,6 +84,9 @@ public class ContainerBrewingStand extends Container
         this.tileBrewingStand.setField(id, data);
     }
 
+    /**
+     * Determines whether supplied player can use this container
+     */
     public boolean canInteractWith(EntityPlayer playerIn)
     {
         return this.tileBrewingStand.isUseableByPlayer(playerIn);
@@ -183,7 +186,7 @@ public class ContainerBrewingStand extends Container
             }
 
             /**
-             * Check if the stack is a valid item for this slot. Always true beside for the armor slots.
+             * Check if the stack is allowed to be placed in this slot, used for armor slots as well as furnace fuel.
              */
             public boolean isItemValid(@Nullable ItemStack stack)
             {
@@ -219,7 +222,7 @@ public class ContainerBrewingStand extends Container
             }
 
             /**
-             * Check if the stack is a valid item for this slot. Always true beside for the armor slots.
+             * Check if the stack is allowed to be placed in this slot, used for armor slots as well as furnace fuel.
              */
             public boolean isItemValid(@Nullable ItemStack stack)
             {
@@ -248,7 +251,7 @@ public class ContainerBrewingStand extends Container
             }
 
             /**
-             * Check if the stack is a valid item for this slot. Always true beside for the armor slots.
+             * Check if the stack is allowed to be placed in this slot, used for armor slots as well as furnace fuel.
              */
             public boolean isItemValid(@Nullable ItemStack stack)
             {

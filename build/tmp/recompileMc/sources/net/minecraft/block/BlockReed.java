@@ -54,6 +54,8 @@ public class BlockReed extends Block implements net.minecraftforge.common.IPlant
                 {
                     int j = ((Integer)state.getValue(AGE)).intValue();
 
+                    if(net.minecraftforge.common.ForgeHooks.onCropsGrowPre(worldIn, pos, state, true))
+                    {
                     if (j == 15)
                     {
                         worldIn.setBlockState(pos.up(), this.getDefaultState());
@@ -62,6 +64,8 @@ public class BlockReed extends Block implements net.minecraftforge.common.IPlant
                     else
                     {
                         worldIn.setBlockState(pos, state.withProperty(AGE, Integer.valueOf(j + 1)), 4);
+                    }
+                    net.minecraftforge.common.ForgeHooks.onCropsGrowPost(worldIn, pos, state, worldIn.getBlockState(pos));
                     }
                 }
             }

@@ -385,17 +385,17 @@ public class WalkNodeProcessor extends NodeProcessor
         return this.getPathNodeType(this.blockaccess, x, y, z, entitylivingIn, this.entitySizeX, this.entitySizeY, this.entitySizeZ, this.getCanBreakDoors(), this.getCanEnterDoors());
     }
 
-    public PathNodeType getPathNodeType(IBlockAccess x, int y, int z, int p_186330_4_)
+    public PathNodeType getPathNodeType(IBlockAccess blockaccessIn, int x, int y, int z)
     {
-        PathNodeType pathnodetype = this.getPathNodeTypeRaw(x, y, z, p_186330_4_);
+        PathNodeType pathnodetype = this.getPathNodeTypeRaw(blockaccessIn, x, y, z);
 
-        if (pathnodetype == PathNodeType.OPEN && z >= 1)
+        if (pathnodetype == PathNodeType.OPEN && y >= 1)
         {
-            Block block = x.getBlockState(new BlockPos(y, z - 1, p_186330_4_)).getBlock();
-            PathNodeType pathnodetype1 = this.getPathNodeTypeRaw(x, y, z - 1, p_186330_4_);
+            Block block = blockaccessIn.getBlockState(new BlockPos(x, y - 1, z)).getBlock();
+            PathNodeType pathnodetype1 = this.getPathNodeTypeRaw(blockaccessIn, x, y - 1, z);
             pathnodetype = pathnodetype1 != PathNodeType.WALKABLE && pathnodetype1 != PathNodeType.OPEN && pathnodetype1 != PathNodeType.WATER && pathnodetype1 != PathNodeType.LAVA ? PathNodeType.WALKABLE : PathNodeType.OPEN;
 
-            if (pathnodetype1 == PathNodeType.DAMAGE_FIRE || block == Blocks.field_189877_df)
+            if (pathnodetype1 == PathNodeType.DAMAGE_FIRE || block == Blocks.MAGMA)
             {
                 pathnodetype = PathNodeType.DAMAGE_FIRE;
             }
@@ -416,7 +416,7 @@ public class WalkNodeProcessor extends NodeProcessor
                 {
                     if (j != 0 || i != 0)
                     {
-                        Block block1 = x.getBlockState(blockpos$pooledmutableblockpos.setPos(j + y, z, i + p_186330_4_)).getBlock();
+                        Block block1 = blockaccessIn.getBlockState(blockpos$pooledmutableblockpos.setPos(j + x, y, i + z)).getBlock();
 
                         if (block1 == Blocks.CACTUS)
                         {

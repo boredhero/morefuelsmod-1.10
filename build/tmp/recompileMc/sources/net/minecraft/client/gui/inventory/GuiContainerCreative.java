@@ -987,6 +987,9 @@ public class GuiContainerCreative extends InventoryEffectRenderer
                 this.scrollTo(0.0F);
             }
 
+            /**
+             * Determines whether supplied player can use this container
+             */
             public boolean canInteractWith(EntityPlayer playerIn)
             {
                 return true;
@@ -1090,7 +1093,7 @@ public class GuiContainerCreative extends InventoryEffectRenderer
         }
 
         /**
-         * Check if the stack is a valid item for this slot. Always true beside for the armor slots.
+         * Check if the stack is allowed to be placed in this slot, used for armor slots as well as furnace fuel.
          */
         public boolean isItemValid(@Nullable ItemStack stack)
         {

@@ -38,11 +38,11 @@ import net.minecraft.world.World;
 public class EntitySelector
 {
     /** This matches the at-tokens introduced for command blocks, including their arguments, if any. */
-    private static final Pattern TOKEN_PATTERN = Pattern.compile("^@([pare])(?:\\[([\\w\\.=,!-]*)\\])?$"); // FORGE: allow . in entity selectors
+    private static final Pattern TOKEN_PATTERN = Pattern.compile("^@([pare])(?:\\[([\\w\\.:=,!-]*)\\])?$"); // FORGE: allow '.' and ':' in entity selectors
     /** This matches things like "-1,,4", and is used for getting x,y,z,range from the token's argument list. */
     private static final Pattern INT_LIST_PATTERN = Pattern.compile("\\G([-!]?[\\w-]*)(?:$|,)");
     /** This matches things like "rm=4,c=2" and is used for handling named token arguments. */
-    private static final Pattern KEY_VALUE_LIST_PATTERN = Pattern.compile("\\G(\\w+)=([-!]?[\\w\\.-]*)(?:$|,)"); // FORGE: allow . in entity selectors
+    private static final Pattern KEY_VALUE_LIST_PATTERN = Pattern.compile("\\G([\\w:]+)=([-!]?[\\w\\.-]*)(?:$|,)"); // FORGE: allow ':' in arguments and '.' in value of entity selectors
     private static final Set<String> WORLD_BINDING_ARGS = Sets.newHashSet(new String[] {"x", "y", "z", "dx", "dy", "dz", "rm", "r"});
 
     /**
@@ -117,6 +117,7 @@ public class EntitySelector
                         list2.addAll(getTagPredicates(map));
                         list2.addAll(getRadiusPredicates(map, vec3d));
                         list2.addAll(getRotationsPredicates(map));
+                        list2.addAll(net.minecraftforge.event.ForgeEventFactory.gatherEntitySelectors(map, s, sender, vec3d));
                         list1.addAll(filterResults(map, targetClass, list2, s, world, blockpos));
                     }
                 }

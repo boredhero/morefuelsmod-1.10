@@ -55,7 +55,7 @@ public class BlockChorusFlower extends Block
             {
                 int i = ((Integer)state.getValue(AGE)).intValue();
 
-                if (i < 5 && rand.nextInt(1) == 0)
+                if (i < 5 &&  net.minecraftforge.common.ForgeHooks.onCropsGrowPre(worldIn, blockpos, state, rand.nextInt(1) == 0))
                 {
                     boolean flag = false;
                     boolean flag1 = false;
@@ -144,6 +144,7 @@ public class BlockChorusFlower extends Block
                     {
                         this.placeDeadFlower(worldIn, pos);
                     }
+                    net.minecraftforge.common.ForgeHooks.onCropsGrowPost(worldIn, pos, state, worldIn.getBlockState(pos));
                 }
             }
         }
@@ -282,6 +283,9 @@ public class BlockChorusFlower extends Block
         return new BlockStateContainer(this, new IProperty[] {AGE});
     }
 
+    /**
+     * Called after the block is set in the Chunk data, but before the Tile Entity is set
+     */
     public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state)
     {
         super.onBlockAdded(worldIn, pos, state);

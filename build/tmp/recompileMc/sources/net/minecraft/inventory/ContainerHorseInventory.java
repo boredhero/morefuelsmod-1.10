@@ -24,7 +24,7 @@ public class ContainerHorseInventory extends Container
         this.addSlotToContainer(new Slot(horseInventoryIn, 0, 8, 18)
         {
             /**
-             * Check if the stack is a valid item for this slot. Always true beside for the armor slots.
+             * Check if the stack is allowed to be placed in this slot, used for armor slots as well as furnace fuel.
              */
             public boolean isItemValid(@Nullable ItemStack stack)
             {
@@ -34,7 +34,7 @@ public class ContainerHorseInventory extends Container
         this.addSlotToContainer(new Slot(horseInventoryIn, 1, 8, 36)
         {
             /**
-             * Check if the stack is a valid item for this slot. Always true beside for the armor slots.
+             * Check if the stack is allowed to be placed in this slot, used for armor slots as well as furnace fuel.
              */
             public boolean isItemValid(@Nullable ItemStack stack)
             {
@@ -76,6 +76,9 @@ public class ContainerHorseInventory extends Container
         }
     }
 
+    /**
+     * Determines whether supplied player can use this container
+     */
     public boolean canInteractWith(EntityPlayer playerIn)
     {
         return this.horseInventory.isUseableByPlayer(playerIn) && this.theHorse.isEntityAlive() && this.theHorse.getDistanceToEntity(playerIn) < 8.0F;

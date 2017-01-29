@@ -972,7 +972,7 @@ public class Chunk
         }
     }
 
-    public <T extends Entity> void getEntitiesOfTypeWithinAAAB(Class <? extends T > entityClass, AxisAlignedBB aabb, List<T> listToFill, Predicate <? super T > p_177430_4_)
+    public <T extends Entity> void getEntitiesOfTypeWithinAAAB(Class <? extends T > entityClass, AxisAlignedBB aabb, List<T> listToFill, Predicate <? super T > filter)
     {
         int i = MathHelper.floor_double((aabb.minY - World.MAX_ENTITY_RADIUS) / 16.0D);
         int j = MathHelper.floor_double((aabb.maxY + World.MAX_ENTITY_RADIUS) / 16.0D);
@@ -983,7 +983,7 @@ public class Chunk
         {
             for (T t : this.entityLists[k].getByClass(entityClass))
             {
-                if (t.getEntityBoundingBox().intersectsWith(aabb) && (p_177430_4_ == null || p_177430_4_.apply(t)))
+                if (t.getEntityBoundingBox().intersectsWith(aabb) && (filter == null || filter.apply(t)))
                 {
                     listToFill.add(t);
                 }
@@ -1270,7 +1270,7 @@ public class Chunk
 
         if (k == 255)
         {
-            Biome biome = provider.getBiomeGenerator(pos, Biomes.PLAINS);
+            Biome biome = provider.getBiome(pos, Biomes.PLAINS);
             k = Biome.getIdForBiome(biome);
             this.blockBiomeArray[j << 4 | i] = (byte)(k & 255);
         }

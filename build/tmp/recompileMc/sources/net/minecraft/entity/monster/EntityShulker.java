@@ -53,8 +53,8 @@ public class EntityShulker extends EntityGolem implements IMob
     protected static final DataParameter<EnumFacing> ATTACHED_FACE = EntityDataManager.<EnumFacing>createKey(EntityShulker.class, DataSerializers.FACING);
     protected static final DataParameter<Optional<BlockPos>> ATTACHED_BLOCK_POS = EntityDataManager.<Optional<BlockPos>>createKey(EntityShulker.class, DataSerializers.OPTIONAL_BLOCK_POS);
     protected static final DataParameter<Byte> PEEK_TICK = EntityDataManager.<Byte>createKey(EntityShulker.class, DataSerializers.BYTE);
-    private float currentPeekAmount0;
-    private float currentPeekAmount;
+    private float prevPeekAmount;
+    private float peekAmount;
     private BlockPos currentAttachmentPosition;
     private int clientSideTeleportInterpolation;
 
@@ -155,9 +155,9 @@ public class EntityShulker extends EntityGolem implements IMob
         return new EntityShulker.BodyHelper(this);
     }
 
-    public static void func_189757_b(DataFixer p_189757_0_)
+    public static void registerFixesShulker(DataFixer fixer)
     {
-        EntityLiving.func_189752_a(p_189757_0_, "Shulker");
+        EntityLiving.registerFixesMob(fixer, "Shulker");
     }
 
     /**
@@ -280,15 +280,15 @@ public class EntityShulker extends EntityGolem implements IMob
         }
 
         float f1 = (float)this.getPeekTick() * 0.01F;
-        this.currentPeekAmount0 = this.currentPeekAmount;
+        this.prevPeekAmount = this.peekAmount;
 
-        if (this.currentPeekAmount > f1)
+        if (this.peekAmount > f1)
         {
-            this.currentPeekAmount = MathHelper.clamp_float(this.currentPeekAmount - 0.05F, f1, 1.0F);
+            this.peekAmount = MathHelper.clamp_float(this.peekAmount - 0.05F, f1, 1.0F);
         }
-        else if (this.currentPeekAmount < f1)
+        else if (this.peekAmount < f1)
         {
-            this.currentPeekAmount = MathHelper.clamp_float(this.currentPeekAmount + 0.05F, 0.0F, f1);
+            this.peekAmount = MathHelper.clamp_float(this.peekAmount + 0.05F, 0.0F, f1);
         }
 
         if (blockpos != null)
@@ -314,8 +314,8 @@ public class EntityShulker extends EntityGolem implements IMob
             this.lastTickPosX = this.posX;
             this.lastTickPosY = this.posY;
             this.lastTickPosZ = this.posZ;
-            double d3 = 0.5D - (double)MathHelper.sin((0.5F + this.currentPeekAmount) * (float)Math.PI) * 0.5D;
-            double d4 = 0.5D - (double)MathHelper.sin((0.5F + this.currentPeekAmount0) * (float)Math.PI) * 0.5D;
+            double d3 = 0.5D - (double)MathHelper.sin((0.5F + this.peekAmount) * (float)Math.PI) * 0.5D;
+            double d4 = 0.5D - (double)MathHelper.sin((0.5F + this.prevPeekAmount) * (float)Math.PI) * 0.5D;
             double d5 = d3 - d4;
             double d0 = 0.0D;
             double d1 = 0.0D;
@@ -410,6 +410,13 @@ public class EntityShulker extends EntityGolem implements IMob
                             flag = true;
                             break;
                         }
+                    }
+
+                    if (flag)
+                    {
+                        net.minecraftforge.event.entity.living.EnderTeleportEvent event = new net.minecraftforge.event.entity.living.EnderTeleportEvent(this, blockpos1.getX(), blockpos1.getY(), blockpos1.getZ(), 0);
+                        if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event)) flag = false;
+                        blockpos1 = new BlockPos(event.getTargetX(), event.getTargetY(), event.getTargetZ());
                     }
 
                     if (flag)
@@ -578,7 +585,7 @@ public class EntityShulker extends EntityGolem implements IMob
     @SideOnly(Side.CLIENT)
     public float getClientPeekAmount(float p_184688_1_)
     {
-        return this.currentPeekAmount0 + (this.currentPeekAmount - this.currentPeekAmount0) * p_184688_1_;
+        return this.prevPeekAmount + (this.peekAmount - this.prevPeekAmount) * p_184688_1_;
     }
 
     @SideOnly(Side.CLIENT)

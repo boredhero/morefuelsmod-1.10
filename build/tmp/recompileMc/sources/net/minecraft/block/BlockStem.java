@@ -77,7 +77,7 @@ public class BlockStem extends BlockBush implements IGrowable
         {
             float f = BlockCrops.getGrowthChance(this, worldIn, pos);
 
-            if (rand.nextInt((int)(25.0F / f) + 1) == 0)
+            if(net.minecraftforge.common.ForgeHooks.onCropsGrowPre(worldIn, pos, state, rand.nextInt((int)(25.0F / f) + 1) == 0))
             {
                 int i = ((Integer)state.getValue(AGE)).intValue();
 
@@ -105,6 +105,7 @@ public class BlockStem extends BlockBush implements IGrowable
                         worldIn.setBlockState(pos, this.crop.getDefaultState());
                     }
                 }
+                net.minecraftforge.common.ForgeHooks.onCropsGrowPost(worldIn, pos, state, worldIn.getBlockState(pos));
             }
         }
     }

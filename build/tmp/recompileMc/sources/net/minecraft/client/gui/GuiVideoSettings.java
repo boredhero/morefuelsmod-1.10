@@ -127,4 +127,15 @@ public class GuiVideoSettings extends GuiScreen
         this.drawCenteredString(this.fontRendererObj, this.screenTitle, this.width / 2, 5, 16777215);
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
+
+    // FORGE: fix for MC-64581 very laggy mipmap slider
+    /**
+     * Called when the screen is unloaded. Used to disable keyboard repeat events
+     */
+    @Override
+    public void onGuiClosed()
+    {
+        super.onGuiClosed();
+        this.mc.gameSettings.onGuiClosed();
+    }
 }

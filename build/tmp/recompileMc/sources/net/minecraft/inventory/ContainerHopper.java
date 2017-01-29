@@ -34,6 +34,9 @@ public class ContainerHopper extends Container
         }
     }
 
+    /**
+     * Determines whether supplied player can use this container
+     */
     public boolean canInteractWith(EntityPlayer playerIn)
     {
         return this.hopperInventory.isUseableByPlayer(playerIn);

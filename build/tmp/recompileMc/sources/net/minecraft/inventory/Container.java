@@ -629,6 +629,9 @@ public abstract class Container
         }
     }
 
+    /**
+     * Determines whether supplied player can use this container
+     */
     public abstract boolean canInteractWith(EntityPlayer playerIn);
 
     /**
@@ -656,18 +659,19 @@ public abstract class Container
                 if (itemstack != null && areItemStacksEqual(stack, itemstack))
                 {
                     int j = itemstack.stackSize + stack.stackSize;
+                    int maxSize = Math.min(slot.getSlotStackLimit(), stack.getMaxStackSize());
 
-                    if (j <= stack.getMaxStackSize())
+                    if (j <= maxSize)
                     {
                         stack.stackSize = 0;
                         itemstack.stackSize = j;
                         slot.onSlotChanged();
                         flag = true;
                     }
-                    else if (itemstack.stackSize < stack.getMaxStackSize())
+                    else if (itemstack.stackSize < maxSize)
                     {
-                        stack.stackSize -= stack.getMaxStackSize() - itemstack.stackSize;
-                        itemstack.stackSize = stack.getMaxStackSize();
+                        stack.stackSize -= maxSize - itemstack.stackSize;
+                        itemstack.stackSize = maxSize;
                         slot.onSlotChanged();
                         flag = true;
                     }

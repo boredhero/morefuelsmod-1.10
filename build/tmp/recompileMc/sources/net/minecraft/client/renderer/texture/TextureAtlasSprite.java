@@ -126,6 +126,9 @@ public class TextureAtlasSprite
         return this.minU + f * (float)u / 16.0F;
     }
 
+    /**
+     * The opposite of getInterpolatedU. Takes the return value of that method and returns the input to it.
+     */
     public float getUnInterpolatedU(float p_188537_1_)
     {
         float f = this.maxU - this.minU;
@@ -157,6 +160,9 @@ public class TextureAtlasSprite
         return this.minV + f * (float)v / 16.0F;
     }
 
+    /**
+     * The opposite of getInterpolatedV. Takes the return value of that method and returns the input to it.
+     */
     public float getUnInterpolatedV(float p_188536_1_)
     {
         float f = this.maxV - this.minV;

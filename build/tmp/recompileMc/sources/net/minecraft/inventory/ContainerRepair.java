@@ -65,7 +65,7 @@ public class ContainerRepair extends Container
         this.addSlotToContainer(new Slot(this.outputSlot, 2, 134, 47)
         {
             /**
-             * Check if the stack is a valid item for this slot. Always true beside for the armor slots.
+             * Check if the stack is allowed to be placed in this slot, used for armor slots as well as furnace fuel.
              */
             public boolean isItemValid(@Nullable ItemStack stack)
             {
@@ -399,6 +399,9 @@ public class ContainerRepair extends Container
         }
     }
 
+    /**
+     * Determines whether supplied player can use this container
+     */
     public boolean canInteractWith(EntityPlayer playerIn)
     {
         return this.theWorld.getBlockState(this.selfPosition).getBlock() != Blocks.ANVIL ? false : playerIn.getDistanceSq((double)this.selfPosition.getX() + 0.5D, (double)this.selfPosition.getY() + 0.5D, (double)this.selfPosition.getZ() + 0.5D) <= 64.0D;

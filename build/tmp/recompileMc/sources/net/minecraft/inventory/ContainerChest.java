@@ -38,6 +38,9 @@ public class ContainerChest extends Container
         }
     }
 
+    /**
+     * Determines whether supplied player can use this container
+     */
     public boolean canInteractWith(EntityPlayer playerIn)
     {
         return this.lowerChestInventory.isUseableByPlayer(playerIn);

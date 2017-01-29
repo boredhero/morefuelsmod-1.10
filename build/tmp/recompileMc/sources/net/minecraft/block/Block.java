@@ -159,7 +159,7 @@ public class Block extends net.minecraftforge.fml.common.registry.IForgeRegistry
     }
 
     @Deprecated
-    public boolean func_189872_a(IBlockState p_189872_1_, Entity p_189872_2_)
+    public boolean canEntitySpawn(IBlockState state, Entity entityIn)
     {
         return true;
     }
@@ -359,7 +359,8 @@ public class Block extends net.minecraftforge.fml.common.registry.IForgeRegistry
     }
 
     /**
-     * The type of render function called. 3 for standard block models, 2 for TESR's, 1 for liquids, -1 is no render
+     * The type of render function called. MODEL for mixed tesr and static model, MODELBLOCK_ANIMATED for TESR-only,
+     * LIQUID for vanilla liquids, INVISIBLE to skip all rendering
      */
     @Deprecated
     public EnumBlockRenderType getRenderType(IBlockState state)
@@ -615,10 +616,16 @@ public class Block extends net.minecraftforge.fml.common.registry.IForgeRegistry
         return 10;
     }
 
+    /**
+     * Called after the block is set in the Chunk data, but before the Tile Entity is set
+     */
     public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state)
     {
     }
 
+    /**
+     * Called serverside after this block is replaced with another in Chunk, but before the Tile Entity is updated
+     */
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state)
     {
         if (hasTileEntity(state) && !(this instanceof BlockContainer))
@@ -798,10 +805,12 @@ public class Block extends net.minecraftforge.fml.common.registry.IForgeRegistry
     {
     }
 
+    // Forge: use getStateForPlacement
     /**
      * Called by ItemBlocks just before a block is actually set in the world, to allow for adjustments to the
      * IBlockstate
      */
+    @Deprecated
     public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
     {
         return this.getStateFromMeta(meta);
@@ -952,9 +961,6 @@ public class Block extends net.minecraftforge.fml.common.registry.IForgeRegistry
      * changes to the world, like pistons replacing the block with an extended base. On the client, the update may
      * involve replacing tile entities, playing sounds, or performing other visual actions to reflect the server side
      * changes.
-     *  
-     * @param state The block state retrieved from the block position prior to this method being invoked
-     * @param pos The position of the block event. Can be used to retrieve tile entities.
      */
     @Deprecated
     public boolean eventReceived(IBlockState state, World worldIn, BlockPos pos, int id, int param)
@@ -1540,7 +1546,7 @@ public class Block extends net.minecraftforge.fml.common.registry.IForgeRegistry
         {
             IBlockState state = world.getBlockState(pos);
             state = state.getBlock().getActualState(state, world, pos);
-            state = state.withProperty(BlockBed.OCCUPIED, true);
+            state = state.withProperty(BlockBed.OCCUPIED, occupied);
             ((World)world).setBlockState(pos, state, 4);
         }
     }
@@ -1944,7 +1950,8 @@ public class Block extends net.minecraftforge.fml.common.registry.IForgeRegistry
                    this != net.minecraft.init.Blocks.IRON_BARS &&
                    this != net.minecraft.init.Blocks.END_GATEWAY;
         }
-        else if (entity instanceof net.minecraft.entity.boss.EntityWither)
+        else if ((entity instanceof net.minecraft.entity.boss.EntityWither) ||
+                 (entity instanceof net.minecraft.entity.projectile.EntityWitherSkull))
         {
             return net.minecraft.entity.boss.EntityWither.canDestroyBlock(this);
         }
@@ -2292,6 +2299,28 @@ public class Block extends net.minecraftforge.fml.common.registry.IForgeRegistry
     public float[] getBeaconColorMultiplier(IBlockState state, World world, BlockPos pos, BlockPos beaconPos)
     {
         return null;
+    }
+
+    /**
+     * Gets the {@link IBlockState} to place
+     * @param world The world the block is being placed in
+     * @param pos The position the block is being placed at
+     * @param facing The side the block is being placed on
+     * @param hitX The X coordinate of the hit vector
+     * @param hitY The Y coordinate of the hit vector
+     * @param hitZ The Z coordinate of the hit vector
+     * @param meta The metadata of {@link ItemStack} as processed by {@link Item#getMetadata(int)}
+     * @param placer The entity placing the block
+     * @param stack The stack being used to place this block
+     * @return The state to be placed in the world
+     */
+    public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, ItemStack stack)
+    {
+        /**
+         * Called by ItemBlocks just before a block is actually set in the world, to allow for adjustments to the
+         * IBlockstate
+         */
+        return onBlockPlaced(world, pos, facing, hitX, hitY, hitZ, meta, placer);
     }
 
     /* ========================================= FORGE END ======================================*/
