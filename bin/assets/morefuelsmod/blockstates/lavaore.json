@@ -2,7 +2,7 @@
     "forge_marker": 1,
     "defaults": {
         "textures": {
-            "all": "morefuelsmod:blocks/lavaore"
+            "all": "morefuelsmod:blocks/lavaOre"
         }
     },
     "variants": {

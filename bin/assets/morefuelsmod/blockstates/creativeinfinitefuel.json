@@ -2,7 +2,7 @@
     "forge_marker": 1,
     "defaults": {
         "textures": {
-            "all": "morefuelsmod:blocks/creativeinfinitefuel"
+            "all": "morefuelsmod:blocks/creativeInfiniteFuel"
         }
     },
     "variants": {
