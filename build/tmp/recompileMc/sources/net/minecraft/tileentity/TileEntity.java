@@ -436,7 +436,7 @@ public abstract class TileEntity implements net.minecraftforge.common.capabiliti
             net.minecraft.util.math.AxisAlignedBB cbb = null;
             try
             {
-                cbb = worldObj.getBlockState(getPos()).getCollisionBoundingBox(worldObj, pos).addCoord(pos.getX(), pos.getY(), pos.getZ());
+                cbb = worldObj.getBlockState(getPos()).getCollisionBoundingBox(worldObj, pos).offset(pos);
             }
             catch (Exception e)
             {

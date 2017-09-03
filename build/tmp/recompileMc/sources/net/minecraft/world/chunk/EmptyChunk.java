@@ -149,6 +149,12 @@ public class EmptyChunk extends Chunk
     {
     }
 
+    /**
+     * Gets all entities that can be assigned to the specified class.
+     *  
+     * @param filter Filter to test candidate entities against. When null, it indicates that there is no filter and that
+     * all entities will pass.
+     */
     public <T extends Entity> void getEntitiesOfTypeWithinAAAB(Class <? extends T > entityClass, AxisAlignedBB aabb, List<T> listToFill, Predicate <? super T > filter)
     {
     }

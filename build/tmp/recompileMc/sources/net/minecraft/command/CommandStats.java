@@ -190,6 +190,9 @@ public class CommandStats extends CommandBase
         }
     }
 
+    /**
+     * Get a list of options for when the user presses the TAB key
+     */
     public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos)
     {
         return args.length == 1 ? getListOfStringsMatchingLastWord(args, new String[] {"entity", "block"}): (args.length == 2 && "entity".equals(args[0]) ? getListOfStringsMatchingLastWord(args, server.getAllUsernames()) : (args.length >= 2 && args.length <= 4 && "block".equals(args[0]) ? getTabCompletionCoordinate(args, 1, pos) : ((args.length != 3 || !"entity".equals(args[0])) && (args.length != 5 || !"block".equals(args[0])) ? ((args.length != 4 || !"entity".equals(args[0])) && (args.length != 6 || !"block".equals(args[0])) ? ((args.length != 6 || !"entity".equals(args[0])) && (args.length != 8 || !"block".equals(args[0])) ? Collections.<String>emptyList() : getListOfStringsMatchingLastWord(args, this.getObjectiveNames(server))) : getListOfStringsMatchingLastWord(args, CommandResultStats.Type.getTypeNames())) : getListOfStringsMatchingLastWord(args, new String[] {"set", "clear"}))));

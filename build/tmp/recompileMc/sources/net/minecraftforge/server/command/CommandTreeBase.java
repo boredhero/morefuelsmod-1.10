@@ -79,6 +79,9 @@ public abstract class CommandTreeBase extends CommandBase
         return s1;
     }
 
+    /**
+     * Get a list of options for when the user presses the TAB key
+     */
     @Override
     public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos)
     {

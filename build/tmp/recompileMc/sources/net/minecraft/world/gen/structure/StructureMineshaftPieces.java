@@ -716,6 +716,7 @@ public class StructureMineshaftPieces
 
     public static class Room extends StructureMineshaftPieces.Peice
         {
+            /** List of other Mineshaft components linked to this room. */
             private final List<StructureBoundingBox> roomsLinkedToTheRoom = Lists.<StructureBoundingBox>newLinkedList();
 
             public Room()
